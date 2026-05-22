@@ -1,25 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Zettopay Online</title>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Zettopay Online</title>
+    
+    <style>
+        /* বডির ডিফল্ট মার্জিন সরিয়ে স্ক্রলবার বন্ধ করার জন্য */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* অপ্রয়োজনীয় স্ক্রলবার বন্ধ করতে */
+        }
+        
+        /* iframe এর সিএসএস */
+        iframe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw; /* Viewport Width */
+            height: 100vh; /* Viewport Height */
+            border: none;
+        }
+    </style>
 </head>
 <body>
-  <iframe 
-    src="https://script.google.com/macros/s/AKfycbx7XL2N-t2gCd2AV8vMjZj2heJ66C9YzLoJtraq_eYROsqoyoEmKBP58FOThHE7vC4-/exec"
-    width="100%"
-    height="100%"
-    allowfullscreen="true"
-    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none;">
-  </iframe>
+    
+    <iframe
+        src="https://script.google.com/macros/s/AKfycbx7XL2N.../exec"
+        allowfullscreen="true">
+    </iframe>
 
-  <script>
-    window.onload = function() {
-      document.querySelector('iframe')
-        .requestFullscreen()
-        .catch((err) => {
-          console.error('Error attempting to enable full-screen mode:', err.message);
-        });
-    };
-  </script>
+    <script>
+        window.onload = function() {
+            const iframe = document.querySelector('iframe');
+            // ব্রাউজার সাপোর্ট চেক করে ফুলস্ক্রিন রিকোয়েস্ট
+            if (iframe.requestFullscreen) {
+                iframe.requestFullscreen().catch((err) => {
+                    console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+                });
+            }
+        };
+    </script>
+    
 </body>
 </html>

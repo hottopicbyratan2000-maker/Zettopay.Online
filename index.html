@@ -2,28 +2,29 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <title>Zettopay Online</title>
+    <title>ZettoPay Online</title>
     
     <style>
-        /* বডির ডিফল্ট মার্জিন সরিয়ে স্ক্রলবার বন্ধ করার জন্য */
-        body, html {
+        /* html এবং body এর সাইজ স্ক্রিনের একদম সমান করে দেওয়া হলো */
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* অপ্রয়োজনীয় স্ক্রলবার বন্ধ করতে */
+            overflow: hidden; /* বাইরের স্ক্রলবার পুরোপুরি বন্ধ */
+            background-color: #0f172a; /* আপনার সাইটের কালারের সাথে মিলিয়ে ব্যাকগ্রাউন্ড */
         }
         
-        /* iframe এর সিএসএস */
+        /* iframe কে চারপাশ থেকে টেনে স্ক্রিনের সমান করা হলো */
         iframe {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100vw; /* Viewport Width */
-            height: 100vh; /* Viewport Height */
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
             border: none;
         }
     </style>
@@ -35,17 +36,5 @@
         allowfullscreen="true">
     </iframe>
 
-    <script>
-        window.onload = function() {
-            const iframe = document.querySelector('iframe');
-            // ব্রাউজার সাপোর্ট চেক করে ফুলস্ক্রিন রিকোয়েস্ট
-            if (iframe.requestFullscreen) {
-                iframe.requestFullscreen().catch((err) => {
-                    console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-                });
-            }
-        };
-    </script>
-    
 </body>
 </html>

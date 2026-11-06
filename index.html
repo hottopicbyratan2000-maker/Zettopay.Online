@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Zettopay.Online</title>
+<meta name="description" content="ZettoPay — Mobile EMI Management System"/>
+<meta name="theme-color" content="#0d1b2a"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ZettoPay"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"/>
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png"/>
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+<link rel="preconnect" href="https://script.google.com"/>
+<link rel="preconnect" href="https://script.googleusercontent.com"/>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0d1b2a;overflow:hidden}
+#app{position:fixed;inset:0;width:100%;height:100%;border:0;background:#0d1b2a}
+/* লোডিং স্প্ল্যাশ */
+#splash{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(circle at 30% 20%,#16315a,#0d1b2a 60%,#070f1f);transition:opacity .45s ease,visibility .45s;font-family:'Hind Siliguri','Noto Sans Bengali','Segoe UI',system-ui,sans-serif;color:#cbd5e1}
+#splash.hide{opacity:0;visibility:hidden}
+#splash img{width:96px;height:96px;border-radius:24px;box-shadow:0 10px 40px rgba(37,99,235,.5);animation:pulse 1.6s ease-in-out infinite}
+#splash .bar{width:120px;height:3px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+#splash .bar i{display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,#3b82f6,#22c55e);animation:slide 1.1s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(300%)}}
+/* ডাউনলোড ব্যানার */
+#zpInstall{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:10;max-width:460px;margin:0 auto;border-radius:18px;overflow:hidden;background:linear-gradient(135deg,rgba(22,40,76,.98),rgba(10,20,40,.98));border:1px solid rgba(96,165,250,.28);box-shadow:0 18px 50px rgba(0,0,0,.6);color:#fff;font-family:'Hind Siliguri','Noto Sans Bengali','Segoe UI',system-ui,sans-serif;transform:translateY(150%);opacity:0;transition:transform .45s cubic-bezier(.2,.9,.3,1.1),opacity .3s ease;pointer-events:none}
+#zpInstall.show{transform:translateY(0);opacity:1;pointer-events:auto}
+#zpInstall .zpi-row{display:flex;align-items:center;gap:13px;padding:13px 14px 15px}
+#zpInstall .zpi-ic{width:54px;height:54px;border-radius:14px;flex-shrink:0;box-shadow:0 6px 18px rgba(37,99,235,.45)}
+#zpInstall .zpi-t{flex:1;min-width:0;line-height:1.25}
+#zpInstall .zpi-t b{display:block;font-size:16px;font-weight:700}
+#zpInstall .zpi-t span{display:block;margin-top:3px;font-size:12.5px;color:#aebbd0}
+#zpInstall .zpi-b{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none;border-radius:12px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 6px 16px rgba(37,99,235,.45);white-space:nowrap}
+#zpInstall .zpi-b:active{transform:scale(.97)}
+#zpInstall .zpi-x{position:absolute;top:6px;right:8px;background:none;border:none;color:#7f8ea8;font-size:18px;cursor:pointer;padding:2px 4px;line-height:1}
+#zpInstall .zpi-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,#3b82f6,#22c55e);transform-origin:left center}
+#zpInstall.show .zpi-bar{animation:zpiBar var(--zpi-dur,8s) linear forwards}
+@keyframes zpiBar{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ★ শুধু এই এক লাইনে আপনার Apps Script Web App URL বসান ★
+     (Apps Script → Deploy → Manage deployments → Web app URL; শেষে /exec থাকবে)
+     ============================================================ -->
+<script>var APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_URL_HERE";</script>
+
+<iframe id="app" title="ZettoPay" allow="clipboard-write; fullscreen; camera; microphone; geolocation" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+<div id="splash"><img src="icons/icon-192.png" alt="ZettoPay"/><div class="bar"><i></i></div></div>
+
+<div id="zpInstall" role="dialog" aria-label="ZettoPay অ্যাপ ডাউনলোড">
+  <button class="zpi-x" id="zpiX" type="button" aria-label="বন্ধ করুন">&times;</button>
+  <div class="zpi-row">
+    <img class="zpi-ic" src="icons/icon-192.png" alt="ZettoPay"/>
+    <div class="zpi-t"><b>ZettoPay অ্যাপ ডাউনলোড করুন</b><span id="zpiSub">ফাস্ট ও নিরাপদ — এক ট্যাপেই খুলুন</span></div>
+    <button class="zpi-b" id="zpiBtn" type="button">ডাউনলোড</button>
+  </div>
+  <div class="zpi-bar"></div>
+</div>
+
+<script>
+(function () {
+  /* ---------- অ্যাপ লোড ---------- */
+  var frame = document.getElementById('app'), splash = document.getElementById('splash');
+  function hideSplash() { splash.classList.add('hide'); }
+  frame.addEventListener('load', hideSplash);
+  setTimeout(hideSplash, 15000);                       // নেট ধীর হলেও স্প্ল্যাশ আটকে থাকবে না
+  frame.src = APPS_SCRIPT_URL;
+
+  /* ---------- Service Worker ---------- */
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  }
+
+  /* ---------- ডাউনলোড ব্যানার ---------- */
+  var SHOW_AFTER = 3000, SHOW_FOR = 8000;              // ৩ সেকেন্ড পরে আসবে, ৮ সেকেন্ড থাকবে (মিলিসেকেন্ড)
+  var box = document.getElementById('zpInstall'), btn = document.getElementById('zpiBtn'), sub = document.getElementById('zpiSub');
+  var deferred = null, timerDone = false, hideT = null;
+  var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  if (standalone) return;                               // ইনস্টল করা থাকলে আর দেখাবে না
+
+  function hide() { box.classList.remove('show'); clearTimeout(hideT); }
+  function show() {
+    if (!deferred && !isIOS) return;
+    if (isIOS && !deferred) { sub.textContent = 'Safari-র Share ⬆ বাটন চেপে অ্যাপ ডাউনলোড করুন'; btn.style.display = 'none'; }
+    box.style.setProperty('--zpi-dur', (SHOW_FOR / 1000) + 's');
+    box.classList.remove('show'); void box.offsetWidth; box.classList.add('show');
+    clearTimeout(hideT); hideT = setTimeout(hide, SHOW_FOR);
+  }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; if (timerDone) show(); });
+  window.addEventListener('appinstalled', function () { deferred = null; hide(); });
+  document.getElementById('zpiX').onclick = hide;       // শুধু এই ভিজিটে বন্ধ; পরের বার আবার আসবে
+  btn.onclick = function () { if (!deferred) return; var d = deferred; deferred = null; hide(); d.prompt(); };
+  setTimeout(function () { timerDone = true; show(); }, SHOW_AFTER);
+})();
+</script>
+</body>
+</html>
